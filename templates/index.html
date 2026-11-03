@@ -1,0 +1,814 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#183f55" />
+    <title>KiraCRM | Estimasi durasi pengaduan</title>
+    <meta name="description" content="Perkirakan durasi penyelesaian pengaduan Jakarta Selatan melalui KiraCRM, berdasarkan data laporan historis." />
+    <link rel="canonical" href="https://kiracrm.online/" />
+
+    <!-- Preview yang dibaca aplikasi chat ketika tautan KiraCRM dibagikan. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="id_ID" />
+    <meta property="og:site_name" content="KiraCRM" />
+    <meta property="og:title" content="KiraCRM | Estimasi durasi pengaduan" />
+    <meta property="og:description" content="Perkirakan durasi penyelesaian pengaduan Jakarta Selatan berdasarkan data laporan historis." />
+    <meta property="og:url" content="https://kiracrm.online/" />
+    <meta property="og:image" content="https://kiracrm.online/static/images/kiracrm.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="2152" />
+    <meta property="og:image:height" content="731" />
+    <meta property="og:image:alt" content="Logo KiraCRM dengan ilustrasi kota dan jam" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="KiraCRM | Estimasi durasi pengaduan" />
+    <meta name="twitter:description" content="Perkirakan durasi penyelesaian pengaduan Jakarta Selatan berdasarkan data laporan historis." />
+    <meta name="twitter:image" content="https://kiracrm.online/static/images/kiracrm.png" />
+
+    <!-- Pustaka CSS ini dibuat otomatis dari class HTML dan aturan dasar tailwind.css. -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='vendor/tailwind.generated.css') }}" />
+    <!-- CSS paket Plotly disimpan lokal; tidak memerlukan style inline. -->
+    <link id="plotly.js-style-global" class="no-inline-styles" rel="stylesheet" href="{{ url_for('static', filename='vendor/plotly-local.css') }}" />
+    <link id="ce8d464691048653ffe3a57c6c18ab566e8366f186677868cf724621a857b4fe" rel="stylesheet" href="{{ url_for('static', filename='vendor/plotly-map.css') }}" />
+  </head>
+  <body
+    data-view="citizen"
+    class="data-[view=citizen]:[&_.research-only]:hidden data-[view=research]:[&_.citizen-only]:hidden"
+  >
+    <a
+      class="
+        skip-link sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-4 focus:z-50
+        focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2 focus:text-white
+      "
+      href="#main"
+    >
+      Langsung ke isi
+    </a>
+
+    <!-- Navigasi yang dipakai kedua halaman. -->
+    <header class="site-header border-b border-line bg-white">
+      <div
+        class="
+          header-inner mx-auto flex max-w-[1440px] items-center justify-between gap-5 px-10 py-5
+          max-md:flex-wrap max-md:px-5
+        "
+      >
+        <a
+          href="#estimasi"
+          class="
+            brand block no-underline max-md:flex-1
+            [&_small]:block [&_small]:text-[10px] [&_small]:tracking-widest [&_small]:text-muted
+          "
+          aria-label="KiraCRM, halaman estimasi pengaduan Jakarta Selatan"
+        >
+          <img
+            src="{{ url_for('static', filename='images/kiracrm.png') }}"
+            alt="KiraCRM"
+            width="2152"
+            height="731"
+            class="block h-auto w-[184px] max-sm:w-40"
+          />
+          <small>Jakarta Selatan</small>
+        </a>
+        <nav
+          class="
+            main-nav flex gap-1 rounded-xl bg-slate-50 p-1 max-md:order-3 max-md:w-full
+            max-md:justify-center [&_a]:rounded-lg [&_a]:px-5 [&_a]:py-2 [&_a]:text-sm
+            [&_a]:font-semibold [&_a]:whitespace-nowrap [&_a]:text-muted [&_a]:no-underline
+            [&_a[aria-current=page]]:bg-white [&_a[aria-current=page]]:text-primary
+            [&_a[aria-current=page]]:shadow-sm max-md:[&_a]:flex-1 max-md:[&_a]:text-center
+          "
+          aria-label="Halaman utama"
+        >
+          <a id="navCitizen" href="#estimasi" aria-current="page">Estimasi warga</a>
+          <a id="navResearch" href="#analisis">Analisis model</a>
+        </nav>
+      </div>
+    </header>
+    <main id="main" class="page-shell mx-auto max-w-[1360px] px-10 max-lg:px-6 max-sm:px-4">
+      <div class="page-heading flex items-end justify-between gap-6 pt-10 pb-8 max-sm:pt-7">
+        <div>
+          <p class="eyebrow mb-2 text-[10px] font-bold tracking-[.16em] text-teal" id="pageEyebrow">
+            INFORMASI WAKTU PENANGANAN
+          </p>
+          <h1
+            id="pageTitle"
+            class="mb-3 text-[40px] leading-tight font-semibold tracking-tight max-sm:text-3xl"
+          >
+            Setiap laporan punya
+            <br />
+            waktu penanganan.
+          </h1>
+          <p
+            class="page-description mb-0 max-w-[610px] text-sm leading-8 text-muted"
+            id="pageDescription"
+          >
+            Dapatkan perkiraan penyelesaian berdasarkan karakteristik laporan Anda dan pola laporan
+            sebelumnya.
+          </p>
+        </div>
+
+      </div>
+
+      <!-- Halaman warga: formulir, hasil estimasi, dan acuan waktu. -->
+      <section id="citizenView" aria-label="Estimasi untuk warga">
+        <div
+          class="
+            report-layout grid grid-cols-[minmax(0,.94fr)_minmax(0,1.26fr)] items-start gap-6
+            max-md:grid-cols-1 [&>div]:min-w-0
+          "
+        >
+          <div id="citizenFormHost">
+            <form
+              id="form"
+              class="
+                panel form-panel rounded-2xl border border-line bg-white p-7 shadow-sm max-sm:px-4
+                max-sm:py-6 print:my-3 print:break-inside-avoid print:shadow-none print:hidden
+              "
+            >
+              <fieldset id="fields">
+                <div
+                  class="
+                    section-heading mb-5 flex items-center justify-between gap-4 max-sm:gap-2
+                    [&_h2]:text-lg max-sm:[&_h2]:text-base
+                  "
+                >
+                  <div>
+                    <p class="eyebrow mb-2 text-[10px] font-bold tracking-[.16em] text-teal">
+                      01 / INFORMASI LAPORAN
+                    </p>
+                    <h2 id="formTitle">Ceritakan jenis laporannya</h2>
+                  </div>
+                  <button
+                    id="sample"
+                    type="button"
+                    class="
+                      text-button inline-flex items-center gap-1 shrink-0 border-0 bg-transparent py-1 text-xs font-semibold whitespace-nowrap
+                      text-teal
+                    "
+                  >
+                    Isi contoh
+                    <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M7 7h10v10" /></svg>
+                  </button>
+                </div>
+                <p class="form-intro mb-6 text-xs text-muted">
+                  Tanda
+                  <span class="required-mark text-teal">*</span>
+                  wajib diisi. Pilihan berikut tidak mengirim laporan ke CRM.
+                </p>
+                <div
+                  class="form-grid grid grid-cols-2 gap-x-4 gap-y-5 max-[440px]:grid-cols-1 [&>div]:min-w-0"
+                >
+                  <div data-field="kanal_aduan">
+                    <label for="kanal_aduan">
+                      Kanal aduan
+                      <span>*</span>
+                    </label>
+                    <select id="kanal_aduan" required>
+                      <option value="">Memuat pilihan...</option>
+                    </select>
+                  </div>
+
+                  <div data-field="kategori_laporan">
+                    <label for="kategori_laporan">
+                      Kategori laporan
+                      <span>*</span>
+                    </label>
+                    <select id="kategori_laporan" required>
+                      <option value="">Memuat pilihan...</option>
+                    </select>
+                  </div>
+
+                  <div data-field="kecamatan">
+                    <label for="kecamatan">
+                      Kecamatan
+                      <span>*</span>
+                    </label>
+                    <select id="kecamatan" required>
+                      <option value="">Pilih kecamatan</option>
+                    </select>
+                  </div>
+
+                  <div data-field="kelurahan">
+                    <label for="kelurahan">
+                      Kelurahan
+                      <span>*</span>
+                    </label>
+                    <select id="kelurahan" required>
+                      <option value="">Pilih kelurahan</option>
+                    </select>
+                  </div>
+
+                  <div data-field="waktu_masuk" class="span-all col-span-full">
+                    <label for="waktu_masuk">
+                      Tanggal dan jam laporan masuk
+                      <span>*</span>
+                    </label>
+                    <input
+                      id="waktu_masuk"
+                      type="datetime-local"
+                      required
+                      min="2000-01-01T00:00"
+                      max="2100-12-31T23:59"
+                    />
+                    <p class="helper mt-2 mb-0 text-xs leading-7 text-muted">
+                      Menggunakan Waktu Indonesia Barat (WIB).
+                    </p>
+                  </div>
+                </div>
+
+                <div
+                  class="
+                    optional-heading mt-7 flex items-center justify-between gap-3 border-t border-line pt-6
+                    text-sm font-semibold [&_small]:rounded-md [&_small]:bg-slate-50 [&_small]:px-2
+                    [&_small]:py-1 [&_small]:text-[10px] [&_small]:font-normal [&_small]:text-muted
+                  "
+                >
+                  <span>Informasi tambahan</span>
+                  <small>Boleh dikosongkan</small>
+                </div>
+                <p class="helper optional-help mt-2 mb-0 text-xs leading-7 text-muted mb-4">
+                  Belum tahu rincian masalah atau unit penanganannya? Kedua kolom ini boleh
+                  dikosongkan.
+                </p>
+                <div
+                  class="
+                    form-grid optional-fields grid grid-cols-2 gap-x-4 gap-y-5 max-[440px]:grid-cols-1
+                    [&>div]:min-w-0 gap-4
+                  "
+                >
+                  <div data-field="rincian_masalah" class="span-all col-span-full">
+                    <label for="rincian_masalah">
+                      Rincian masalah
+                      <small id="keteranganRincianOpsional">opsional</small>
+                    </label>
+                    <select id="rincian_masalah">
+                      <option value="">Belum diketahui</option>
+                    </select>
+                    <p
+                      id="keteranganRincianTerpilih"
+                      class="
+                        selection-description mt-2 mb-0 border-l-2 border-teal/25 pl-3 text-[11px]
+                        leading-relaxed wrap-anywhere text-muted
+                      "
+                      hidden
+                    ></p>
+                  </div>
+
+                  <div data-field="unit_penanganan" class="span-all col-span-full">
+                    <label for="unit_penanganan">
+                      Unit penanganan
+                      <small id="keteranganUnitOpsional">opsional</small>
+                    </label>
+                    <select id="unit_penanganan">
+                      <option value="">Belum diketahui</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div
+                  class="
+                    form-actions mt-7 flex gap-3 print:hidden [&_.button-primary]:flex-1
+                    [&_.button-primary]:justify-between
+                  "
+                >
+                  <button
+                    id="submitButton"
+                    type="submit"
+                    class="
+                      button button-primary inline-flex min-h-11 items-center justify-center gap-3 rounded-lg
+                      border border-transparent px-4 py-3 text-sm leading-5 font-semibold no-underline
+                      transition bg-primary text-white shadow-sm hover:bg-ink
+                    "
+                  >
+                    <span id="submitLabel">Lihat perkiraan waktu</span>
+                    <span aria-hidden="true">→</span>
+                  </button>
+                  <button
+                    id="resetButton"
+                    type="button"
+                    class="
+                      button button-secondary inline-flex min-h-11 items-center justify-center gap-3 rounded-lg
+                      border border-transparent px-4 py-3 text-sm leading-5 font-semibold no-underline
+                      transition border-line bg-white text-primary hover:bg-slate-50
+                    "
+                  >
+                    Reset
+                  </button>
+                </div>
+                <p
+                  id="status"
+                  class="form-status mt-3 mb-0 min-h-4 text-xs text-muted"
+                  role="status"
+                  aria-live="polite"
+                >
+                  Menyiapkan daftar pilihan...
+                </p>
+                <p
+                  id="error"
+                  class="error-message mt-3 mb-0 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800"
+                  role="alert"
+                  hidden
+                ></p>
+              </fieldset>
+            </form>
+          </div>
+
+          <div class="result-column grid gap-5">
+            <div id="citizenResultHost">
+              <section
+                id="resultPanel"
+                class="
+                  panel result-panel rounded-2xl border border-line bg-white p-7 shadow-sm max-sm:px-4
+                  max-sm:py-6 print:my-3 print:break-inside-avoid print:shadow-none print:block
+                "
+                aria-live="polite"
+                aria-label="Hasil estimasi"
+              >
+                <div
+                  class="
+                    section-heading mb-5 flex items-center justify-between gap-4 max-sm:gap-2
+                    [&_h2]:text-lg max-sm:[&_h2]:text-base
+                  "
+                >
+                  <div>
+                    <p class="eyebrow mb-2 text-[10px] font-bold tracking-[.16em] text-teal">
+                      02 / PERKIRAAN PENYELESAIAN
+                    </p>
+                    <h2 id="resultTitle">Perkiraan untuk laporan Anda</h2>
+                  </div>
+                  <span
+                    id="resultState"
+                    class="
+                      small-tag inline-block rounded-md border border-line bg-slate-50 px-2 py-1 text-[10px]
+                      leading-relaxed whitespace-nowrap text-muted
+                    "
+                  >
+                    Belum dihitung
+                  </span>
+                </div>
+
+                <div
+                  id="empty"
+                  class="
+                    empty-state px-5 pt-3 pb-8 text-center [&_h3]:mb-2 [&_h3]:font-medium [&_p]:mx-auto
+                    [&_p]:mb-5 [&_p]:max-w-[300px] [&_p]:text-xs [&_p]:leading-7 [&_p]:text-muted
+                  "
+                >
+                  <div class="clock-illustration mx-auto mb-3 w-40" aria-hidden="true">
+                    <svg viewbox="0 0 160 130">
+                      <circle
+                        class="clock-orbit fill-none stroke-[#dbe8e7] stroke-[1.5] [stroke-dasharray:3_6]"
+                        cx="80"
+                        cy="64"
+                        r="53"
+                      ></circle>
+                      <path
+                        class="clock-line fill-none stroke-[#cedede] stroke-[1.5] [stroke-linecap:round]"
+                        d="M28 64H11m138 0h-17M80 11V2m0 126v-12"
+                      ></path>
+                      <circle
+                        class="clock-face fill-[#edf6f3] stroke-[#a9c6c5] stroke-[1.5]"
+                        cx="80"
+                        cy="64"
+                        r="37"
+                      ></circle>
+                      <path
+                        class="clock-hand fill-none stroke-[#256e73] stroke-[3] [stroke-linecap:round] [stroke-linejoin:round]"
+                        d="M80 43v23l15 9"
+                      ></path>
+                      <circle class="clock-center fill-[#256e73]" cx="80" cy="64" r="4"></circle>
+                      <circle
+                        class="clock-spark fill-[#e2b578] stroke-white stroke-[4]"
+                        cx="130"
+                        cy="23"
+                        r="8"
+                      ></circle>
+                    </svg>
+                  </div>
+                  <h3>Mulai dari informasi laporan Anda.</h3>
+                  <p>
+                    Isi informasi laporannya. Perkiraan waktu penyelesaian akan muncul di sini.
+                  </p>
+                  <span class="empty-caption research-only text-[10px] text-slate-400">
+                    Tidak ada pelatihan ulang saat Anda menghitung.
+                  </span>
+                </div>
+
+                <div id="result" hidden>
+                  <!-- Warga melihat perkiraan utama lebih dahulu, lalu rentang waktunya. -->
+                  <div class="citizen-only">
+                    <div class="rounded-xl bg-primary p-6 text-white max-sm:p-5 print:bg-slate-50 print:text-ink">
+                      <p class="mb-3 text-sm text-white/80 print:text-muted">Perkiraan waktu penyelesaian</p>
+                      <strong
+                        id="citizenEstimate"
+                        class="block text-[48px] leading-tight font-semibold tracking-tight tabular-nums max-sm:text-4xl"
+                      ></strong>
+                      <p id="citizenEstimateDays" class="mt-2 mb-0 text-base text-white/90 print:text-ink"></p>
+                      <p id="citizenFinish" class="mt-4 mb-0 border-t border-white/20 pt-3 text-xs leading-6 text-white/80 print:border-line print:text-muted"></p>
+                    </div>
+
+                    <div class="mt-4 rounded-xl border border-line bg-slate-50 p-5 max-sm:p-4">
+                      <h3 class="mb-2 text-sm font-medium text-muted">Rentang perkiraan</h3>
+                      <strong id="citizenRange" class="block text-2xl leading-tight font-semibold tabular-nums text-primary"></strong>
+                      <p id="citizenRangeDays" class="mt-2 mb-0 text-sm text-muted"></p>
+                      <p id="citizenRangeDates" class="mt-3 mb-0 text-xs leading-6 text-muted"></p>
+                    </div>
+                  </div>
+
+                  <!-- Kedua halaman memakai urutan yang sama: estimasi utama, lalu rentang. -->
+                  <div class="research-only">
+                    <div class="rounded-xl bg-primary p-6 text-white max-sm:p-5 print:bg-slate-50 print:text-ink">
+                      <p class="mb-3 text-sm text-white/80 print:text-muted">Perkiraan waktu penyelesaian</p>
+                      <strong
+                        id="estimate"
+                        class="block text-[48px] leading-tight font-semibold tracking-tight tabular-nums max-sm:text-4xl"
+                      ></strong>
+                      <p id="estimateDays" class="mt-2 mb-0 text-base text-white/90 print:text-ink"></p>
+                      <p id="finish" class="mt-4 mb-0 border-t border-white/20 pt-3 text-xs leading-6 text-white/80 print:border-line print:text-muted"></p>
+                    </div>
+
+                    <div class="mt-4 rounded-xl border border-line bg-slate-50 p-5 max-sm:p-4">
+                      <h3 class="mb-2 text-sm font-medium text-muted">Rentang perkiraan</h3>
+                      <strong id="range" class="block text-2xl leading-tight font-semibold tabular-nums text-primary"></strong>
+                      <p id="rangeDays" class="mt-2 mb-0 text-sm text-muted"></p>
+                      <p id="rangeDates" class="mt-3 mb-0 text-xs leading-6 text-muted"></p>
+                    </div>
+                    <p id="used" class="model-label mt-2 mb-0 text-[11px] text-muted"></p>
+                  </div>
+                  <p
+                    id="citizenWarning"
+                    class="
+                      citizen-only result-disclaimer mt-4 mb-0 border-t border-line pt-3 text-xs leading-7 text-muted
+                      [&.caution]:text-amber-800
+                    "
+                  >
+                    Gunakan hasil ini sebagai gambaran waktu. Penyelesaian sebenarnya dapat lebih
+                    cepat atau lebih lama, sesuai kondisi penanganan laporan.
+                  </p>
+                  <div
+                    class="
+                      facts research-only mt-4 grid grid-cols-2 gap-4 border-t border-line pt-5 pb-3
+                      [&_small]:block [&_small]:text-xs [&_small]:text-muted [&_strong]:text-2xl
+                      [&_strong]:font-semibold
+                    "
+                  >
+                    <div>
+                      <small>Latihan model</small>
+                      <strong id="trainCount"></strong>
+                    </div>
+
+                    <div>
+                      <small id="intervalSourceLabel">Prediksi OOF latihan</small>
+                      <strong id="oofCount"></strong>
+                    </div>
+                  </div>
+                  <details
+                    class="
+                      research-only technical-details mt-2 border-t border-line pt-4 text-xs [&_dl]:my-4
+                      [&_dl]:grid [&_dl]:grid-cols-2 [&_dl]:gap-2 [&_dt]:text-muted [&_dd]:text-right
+                      [&_dd]:tabular-nums [&_ul]:ml-5 [&_ul]:list-disc [&_ul]:text-amber-800 [&_li]:mt-2
+                    "
+                  >
+                    <summary>Informasi model</summary>
+                    <dl id="metrics"></dl>
+                    <div id="iqrEvaluation"></div>
+                    <h3>Nilai yang dikirim ke model</h3>
+                    <div id="features"></div>
+                    <p
+                      id="source"
+                      class="helper break mt-2 mb-0 text-xs leading-7 text-muted wrap-anywhere"
+                    ></p>
+                  </details>
+                </div>
+              </section>
+            </div>
+            <section
+              class="
+                panel history-panel rounded-2xl border border-line bg-white p-7 shadow-sm max-sm:px-4
+                max-sm:py-6 print:my-3 print:break-inside-avoid print:shadow-none [&_h2]:text-base
+              "
+              aria-label="Pembanding laporan historis"
+            >
+              <div
+                class="
+                  section-heading mb-5 flex items-center justify-between gap-4 max-sm:gap-2
+                  [&_h2]:text-lg max-sm:[&_h2]:text-base
+                "
+              >
+                <div>
+                  <p class="eyebrow mb-2 text-[10px] font-bold tracking-[.16em] text-teal">
+                    KONTEKS DARI LAPORAN TERDAHULU
+                  </p>
+                  <h2>Dibandingkan laporan sejenis</h2>
+                </div>
+                <span
+                  class="
+                    small-tag inline-block rounded-md border border-line bg-slate-50 px-2 py-1 text-[10px]
+                    leading-relaxed whitespace-nowrap text-muted
+                  "
+                  id="historyCount"
+                >
+                  Laporan terdahulu
+                </span>
+              </div>
+              <p
+                id="historyEmpty"
+                class="placeholder-note mb-0 max-w-[430px] text-xs leading-7 text-slate-400"
+              >
+                Setelah estimasi dihitung, lihat rentang waktu yang biasa tercatat pada laporan
+                sejenis.
+              </p>
+              <div id="historyResult" hidden>
+                <div
+                  id="historyTimeline"
+                  class="timeline-chart mt-3 [&_svg]:h-auto [&_svg]:w-full"
+                ></div>
+                <div
+                  class="
+                    timeline-legend mt-3 mb-3 flex flex-wrap gap-x-4 gap-y-2 text-[10px] text-muted
+                    [&_span]:flex [&_span]:items-center [&_span]:gap-1 [&_i]:inline-block [&_i]:h-1.5
+                    [&_i]:w-3 [&_i]:rounded-sm
+                  "
+                >
+                  <span>
+                    <i class="legend-history bg-[#bad9cc]"></i>
+                    50% laporan terdahulu
+                  </span>
+                  <span>
+                    <i class="legend-model bg-[#276d75]"></i>
+                    Rentang perkiraan laporan ini
+                  </span>
+                </div>
+                <p id="historySentence"></p>
+                <p id="historyNote" class="helper mt-2 mb-0 text-xs leading-7 text-muted"></p>
+              </div>
+            </section>
+            <section
+              class="
+                panel sk-panel rounded-2xl border border-line bg-white p-7 shadow-sm max-sm:px-4
+                max-sm:py-6 print:my-3 print:break-inside-avoid print:shadow-none [&_h2]:text-base
+              "
+              aria-label="Acuan waktu SK Sekda"
+            >
+              <div
+                class="
+                  section-heading mb-5 flex items-center justify-between gap-4 max-sm:gap-2
+                  [&_h2]:text-lg max-sm:[&_h2]:text-base
+                "
+              >
+                <div>
+                  <p class="eyebrow mb-2 text-[10px] font-bold tracking-[.16em] text-teal">
+                    ACUAN WAKTU PENANGANAN
+                  </p>
+                  <h2>Waktu menurut SK Sekda</h2>
+                </div>
+                <span
+                  class="document-icon rounded-md border border-line px-2 text-2xl leading-tight text-slate-400"
+                  aria-hidden="true"
+                >
+                  ≡
+                </span>
+              </div>
+              <p
+                id="skEmpty"
+                class="placeholder-note mb-0 max-w-[430px] text-xs leading-7 text-slate-400"
+              >
+                Pilih rincian masalah untuk melihat acuan waktu pada SK Sekda.
+              </p>
+              <div id="skResult" hidden>
+                <div
+                  class="
+                    sk-source mt-4 mb-2 flex flex-wrap items-start justify-between gap-3 text-xs
+                    [&>span]:font-semibold [&>span]:text-amber-800 [&_a]:text-teal [&_a]:no-underline
+                    hover:[&_a]:underline
+                  "
+                >
+                  <span id="skVersion"></span>
+                  <a id="skLink" class="inline-flex items-center gap-1" target="_blank" rel="noopener">
+                    <span id="skLinkLabel">Buka PDF sumber</span>
+                    <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M7 7h10v10" /></svg>
+                  </a>
+                </div>
+                <p id="skDescription" class="helper mt-2 mb-0 text-xs leading-7 text-muted"></p>
+                <div
+                  id="skBands"
+                  class="sk-bands mt-4 grid grid-cols-4 gap-2 max-[440px]:grid-cols-2"
+                ></div>
+                <p
+                  id="skPosition"
+                  class="sk-position mt-3 mb-0 text-xs leading-7 text-amber-800"
+                ></p>
+                <p id="skNote" class="helper mt-2 mb-0 text-xs leading-7 text-muted"></p>
+              </div>
+            </section>
+          </div>
+        </div>
+
+        <div
+          class="
+            page-link my-7 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-center
+            text-xs text-muted print:hidden [&_a]:font-semibold [&_a]:text-teal [&_a]:no-underline
+            hover:[&_a]:underline
+          "
+        >
+          <span>Ingin melihat dasar perhitungan dan perbandingan model?</span>
+          <a href="#analisis">
+            Buka analisis model
+            <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- Halaman analisis mengikuti urutan rancangan: isian, ringkasan, sebaran, tabel, grafik. -->
+      <section id="researchView" aria-label="Analisis untuk peneliti" class="space-y-6" hidden>
+        <!-- Formulir dan hasil memakai komponen serta lebar kolom yang sama dengan halaman warga. -->
+        <div
+          class="
+            report-layout grid grid-cols-[minmax(0,.94fr)_minmax(0,1.26fr)] items-start gap-6
+            max-md:grid-cols-1 [&>div]:min-w-0
+          "
+        >
+          <div id="researchFormHost"></div>
+          <div id="researchResultHost" class="result-column grid gap-5"></div>
+        </div>
+
+        <section id="researchDashboard" class="space-y-6" hidden>
+          <section class="rounded-2xl border border-line bg-white p-6 shadow-sm max-sm:p-4" aria-labelledby="dataHeading">
+            <h2 id="dataHeading" class="text-lg">Ringkasan data dan pembagian</h2>
+            <div class="
+              mt-4 grid grid-cols-4 gap-3 max-sm:grid-cols-2 [&>div]:rounded-xl [&>div]:border
+              [&>div]:border-line [&>div]:bg-slate-50 [&>div]:p-4 [&>div]:text-center [&_span]:block
+              [&_span]:text-xs [&_span]:text-muted [&_strong]:mt-2 [&_strong]:block [&_strong]:text-xl
+              [&_small]:mt-1 [&_small]:block [&_small]:text-[11px] [&_small]:text-muted
+            ">
+              <div>
+                <span>Jumlah laporan</span>
+                <strong id="dataTotal">-</strong>
+                <small>Seluruh dataset</small>
+              </div>
+              <div>
+                <span>Data latih awal</span>
+                <strong id="dataInitial">-</strong>
+                <small>80% sebelum IQR</small>
+              </div>
+              <div>
+                <span>Latih setelah IQR</span>
+                <strong id="dataTrain">-</strong>
+                <small>Sama untuk ketiga model</small>
+              </div>
+              <div>
+                <span>Data uji yang dinilai</span>
+                <strong id="dataTest">-</strong>
+                <small id="testAvailability"></small>
+              </div>
+            </div>
+            <p id="snapshotNote" class="mt-4 mb-0 text-xs leading-6 text-muted"></p>
+          </section>
+
+          <!-- Sumber hanya mengubah pembanding peneliti. Estimasi warga tetap dari model utama. -->
+          <section class="rounded-2xl border border-line bg-white p-6 shadow-sm max-sm:p-4" aria-labelledby="analysisSourceHeading">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <h2 id="analysisSourceHeading" class="text-lg">Sumber laporan pembanding</h2>
+                <p class="mt-1 mb-0 text-xs text-muted">Pilih contoh yang belum dipelajari model, yang sudah dipelajari, atau bandingkan keduanya.</p>
+              </div>
+              <fieldset class="m-0 w-full rounded-xl border border-line bg-slate-50 p-1 sm:w-auto">
+                <legend class="sr-only">Sumber 30 laporan terdekat</legend>
+                <div class="grid grid-cols-3 gap-1">
+                  <label class="mb-0 cursor-pointer">
+                    <input id="analysisSourceTest" type="radio" name="analysisSource" value="test" checked class="peer sr-only" />
+                    <span class="block rounded-lg px-5 py-2.5 text-center text-sm font-semibold text-muted transition-colors peer-checked:bg-white peer-checked:text-teal peer-checked:shadow-sm peer-focus-visible:ring-2 peer-focus-visible:ring-teal">Uji</span>
+                  </label>
+                  <label class="mb-0 cursor-pointer">
+                    <input id="analysisSourceTrain" type="radio" name="analysisSource" value="train" class="peer sr-only" />
+                    <span class="block rounded-lg px-5 py-2.5 text-center text-sm font-semibold text-muted transition-colors peer-checked:bg-white peer-checked:text-teal peer-checked:shadow-sm peer-focus-visible:ring-2 peer-focus-visible:ring-teal">Latihan</span>
+                  </label>
+                  <label class="mb-0 cursor-pointer">
+                    <input id="analysisSourceBoth" type="radio" name="analysisSource" value="both" class="peer sr-only" />
+                    <span class="block rounded-lg px-5 py-2.5 text-center text-sm font-semibold text-muted transition-colors peer-checked:bg-white peer-checked:text-teal peer-checked:shadow-sm peer-focus-visible:ring-2 peer-focus-visible:ring-teal">Keduanya</span>
+                  </label>
+                </div>
+              </fieldset>
+            </div>
+            <p id="analysisSourceNote" class="mt-4 mb-0 text-xs leading-6 text-muted">30 laporan uji dipilih berdasarkan kemiripan daun CatBoost.</p>
+            <p id="analysisLoadStatus" class="mt-1 mb-0 text-xs leading-6 text-teal" role="status" aria-live="polite"></p>
+          </section>
+
+          <!-- Histogram dan median-kuartil memakai 30 anggota terdekat dari sumber yang dipilih. -->
+          <section class="rounded-2xl border border-line bg-white p-6 shadow-sm max-sm:p-4" aria-labelledby="distributionHeading">
+            <h2 id="distributionHeading" class="text-lg">Sebaran durasi laporan paling mirip</h2>
+            <p id="histogramScope" class="mt-2 mb-0 text-xs leading-6 text-muted"></p>
+            <div id="distributionPanels" class="mt-5 grid gap-6">
+              <div id="distributionTestPanel" class="min-w-0">
+                <h3 class="m-0 text-sm">Data uji <span class="ml-2 text-xs font-normal text-muted">30 laporan</span></h3>
+                <div id="histogram" class="mt-2 min-w-0 [&_svg]:h-auto [&_svg]:w-full"></div>
+                <div id="distributionFacts" class="mt-3 grid grid-cols-3 gap-3 rounded-xl bg-slate-50 p-4 max-sm:grid-cols-2 [&_span]:block [&_span]:text-xs [&_span]:text-muted [&_strong]:mt-1 [&_strong]:block [&_strong]:text-sm"></div>
+              </div>
+              <div id="distributionTrainPanel" class="min-w-0" hidden>
+                <h3 class="m-0 text-sm">Data latihan <span class="ml-2 text-xs font-normal text-muted">30 laporan</span></h3>
+                <div id="histogramTrain" class="mt-2 min-w-0 [&_svg]:h-auto [&_svg]:w-full"></div>
+                <div id="distributionFactsTrain" class="mt-3 grid grid-cols-3 gap-3 rounded-xl bg-slate-50 p-4 max-sm:grid-cols-2 [&_span]:block [&_span]:text-xs [&_span]:text-muted [&_strong]:mt-1 [&_strong]:block [&_strong]:text-sm"></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="rounded-2xl border border-line bg-white p-6 shadow-sm max-sm:p-4" aria-labelledby="livePredictionsHeading">
+            <h2 id="livePredictionsHeading" class="text-lg">Estimasi ketiga model untuk isian ini</h2>
+            <p id="livePredictionsScope" class="mt-2 mb-0 text-xs leading-6 text-muted"></p>
+            <div id="livePredictionCards" class="mt-4 grid grid-cols-3 gap-4 max-sm:grid-cols-1" aria-live="polite"></div>
+            <p class="mt-3 mb-0 text-xs leading-6 text-muted">
+              Setiap model menghitung ulang estimasi dari seluruh isian di atas.
+            </p>
+          </section>
+
+          <!-- MAE kelompok memakai 30 anggota. Metrik seluruh uji tetap memakai semua uji lolos IQR. -->
+          <section class="rounded-2xl border border-line bg-white p-6 shadow-sm max-sm:p-4" aria-labelledby="comparisonHeading">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <h2 id="comparisonHeading" class="text-lg">Perbandingan kinerja model</h2>
+              <span id="evaluationScope" class="text-xs text-muted"></span>
+            </div>
+            <p class="mt-2 mb-0 text-xs text-muted sm:hidden">Geser tabel untuk melihat RMSE dan R².</p>
+            <div class="mt-4 overflow-x-auto" role="region" aria-label="Kinerja tiga model dan baseline median" tabindex="0">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Model</th>
+                    <th id="localMaeHeading">MAE 30 uji<br />(jam)</th>
+                    <th id="trainMaeHeading" hidden>MAE 30 latihan<br />(jam)</th>
+                    <th>MAE seluruh uji<br />(jam)</th>
+                    <th>RMSE<br />(jam)</th>
+                    <th>R²</th>
+                  </tr>
+                </thead>
+                <tbody id="modelComparisonRows" class="[&_.selected-model]:bg-emerald-50 [&_.selected-model]:font-semibold"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- Semua titik dari sumber terpilih ikut di grafik. Anggota 30 terdekat diberi warna berbeda. -->
+          <section class="rounded-2xl border border-line bg-white p-6 shadow-sm max-sm:p-4" aria-labelledby="scatterHeading">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <h2 id="scatterHeading" class="text-lg">Prediksi terhadap durasi aktual</h2>
+              <span class="rounded-md bg-emerald-50 px-3 py-1 text-xs font-semibold text-teal">CatBoost - model estimasi warga</span>
+            </div>
+            <div
+              class="mt-4 flex flex-wrap items-center gap-2 text-xs"
+              role="group"
+              aria-label="Pembesaran grafik prediksi dan aktual"
+            >
+              <button id="scatterZoomIn" type="button" aria-controls="scatter"
+                class="min-h-10 rounded-lg border border-line bg-white px-3 py-2 font-semibold text-primary hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-teal disabled:cursor-not-allowed disabled:opacity-40">
+                Perbesar (+)
+              </button>
+              <button id="scatterZoomOut" type="button" aria-controls="scatter" disabled
+                class="min-h-10 rounded-lg border border-line bg-white px-3 py-2 font-semibold text-primary hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-teal disabled:cursor-not-allowed disabled:opacity-40">
+                Perkecil (-)
+              </button>
+              <button id="scatterZoomReset" type="button" aria-controls="scatter"
+                class="min-h-10 rounded-lg border border-line bg-white px-3 py-2 font-semibold text-primary hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-teal">
+                Reset
+              </button>
+              <span id="scatterZoomLevel" class="min-w-8 text-center font-semibold text-teal" role="status">1x</span>
+            </div>
+            <p class="mt-2 mb-0 text-xs leading-6 text-muted">
+              Roda mouse untuk zoom di posisi kursor. Setelah diperbesar, klik-tahan dan geser grafik.
+              Reset untuk kembali ke zoom awal.
+            </p>
+            <div id="scatter" role="img" class="mx-auto mt-4 h-[340px] w-full max-w-[760px]"></div>
+            <div class="mt-3 flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs text-muted" role="group" aria-label="Kelompok titik yang ditampilkan">
+              <label class="mb-0 inline-flex min-h-8 cursor-pointer items-center gap-2 text-xs font-normal text-muted">
+                <input id="scatterShowSimilar" type="checkbox" checked aria-controls="scatter" class="h-4 w-4 shrink-0 cursor-pointer p-0 accent-[#7c3aed]" />
+                <i id="scatterTestDot" class="h-2.5 w-2.5 shrink-0 rounded-full bg-[#7c3aed]"></i>
+                <i id="scatterTrainDot" class="h-2.5 w-2.5 shrink-0 rounded-full bg-[#c38122]" hidden></i>
+                <span class="ml-0 text-muted"><span id="scatterSimilarLabel">30 laporan uji terdekat</span> <span id="scatterSimilarCount"></span></span>
+              </label>
+              <label class="mb-0 inline-flex min-h-8 cursor-pointer items-center gap-2 text-xs font-normal text-muted">
+                <input id="scatterShowOthers" type="checkbox" checked aria-controls="scatter" class="h-4 w-4 shrink-0 cursor-pointer p-0 accent-[#437ba1]" />
+                <i class="h-2 w-2 shrink-0 rounded-full bg-[#437ba1]"></i>
+                <span id="scatterOthersLabel" class="ml-0 text-muted">Laporan uji lainnya</span>
+              </label>
+              <span class="inline-flex items-center gap-2"><i class="w-5 border-t-2 border-dashed border-amber-600"></i>Garis ideal</span>
+            </div>
+            <p id="scatterNote" class="mt-3 mb-0 text-center text-xs leading-6 text-muted"></p>
+            <p id="scatterSourceNote" class="mt-1 mb-0 text-center text-xs leading-6 text-muted"></p>
+            <p class="mt-1 mb-0 text-center text-xs leading-6 text-muted">Titik yang jauh dari garis ideal menunjukkan prediksi yang meleset lebih jauh.</p>
+          </section>
+        </section>
+
+        <p class="py-3 text-center text-sm"><a href="#estimasi" class="font-semibold text-teal no-underline hover:underline">Kembali ke halaman estimasi</a></p>
+      </section>
+
+      <footer
+        class="
+          site-footer mt-7 border-t border-line pt-6 pb-7 text-[10px] text-slate-400 print:hidden
+        "
+      >
+        <span>KiraCRM - Jakarta Selatan</span>
+      </footer>
+    </main>
+    <script src="{{ url_for('static', filename='vendor/plotly-strict.min.js') }}"></script>
+    <!-- Setelah HTML terbaca, app.js memasang event dan mengambil pilihan form dari Flask. -->
+    <script type="module" src="{{ url_for('static', filename='js/app.js') }}"></script>
+  </body>
+</html>

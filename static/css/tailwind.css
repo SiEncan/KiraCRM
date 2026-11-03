@@ -1,0 +1,134 @@
+/* SUMBER YANG BOLEH DISUNTING: warna dan aturan dasar elemen.
+   Gaya tiap komponen tetap ditulis lewat class Tailwind di HTML.
+   npm run build:css membuat pustaka otomatis di static/vendor/tailwind.generated.css. */
+@import "tailwindcss" source(none);
+@source "../../templates";
+@source "../js";
+
+@theme {
+  --color-ink: #183444;
+  --color-muted: #687d87;
+  --color-primary: #164b62;
+  --color-teal: #0d7d78;
+  --color-canvas: #f4f7f7;
+  --color-line: #e0e8e9;
+  --font-sans: "Segoe UI", Arial, sans-serif;
+}
+
+/* Aturan umum elemen. Warna/jarak khusus ditulis pada class di HTML. */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply m-0 bg-canvas font-sans text-sm leading-relaxed text-ink antialiased;
+  }
+
+  [hidden] {
+    display: none !important;
+  }
+
+  h1, h2, h3 {
+    @apply font-semibold tracking-tight;
+  }
+
+  h2 {
+    @apply text-lg;
+  }
+
+  h3 {
+    @apply text-base;
+  }
+
+  p {
+    @apply mb-3;
+  }
+
+  a {
+    @apply text-primary;
+  }
+
+  button:not(:disabled), summary {
+    cursor: pointer;
+  }
+
+  button:disabled {
+    @apply cursor-wait opacity-60;
+  }
+
+  fieldset {
+    @apply min-w-0 border-0 p-0;
+  }
+
+  fieldset:disabled {
+    @apply opacity-70;
+  }
+
+  svg {
+    @apply block max-w-full;
+  }
+
+  label {
+    @apply mb-2 block text-sm font-semibold text-ink;
+  }
+
+  label > span {
+    @apply ml-1 text-teal;
+  }
+
+  label small {
+    @apply ml-1 text-xs font-normal text-muted;
+  }
+
+  select, input {
+    @apply
+      h-12 w-full min-w-0 rounded-lg border border-line bg-white px-3 text-sm text-ink
+      transition outline-none hover:border-slate-400 focus:border-teal focus:ring-2
+      focus:ring-teal/15 disabled:cursor-not-allowed disabled:bg-slate-100
+      max-sm:text-base;
+  }
+
+  select {
+    @apply pr-7;
+  }
+
+  summary {
+    @apply cursor-pointer text-xs font-semibold text-primary;
+  }
+
+  table {
+    @apply w-full border-collapse text-xs;
+  }
+
+  th {
+    @apply bg-slate-50 text-left text-xs font-semibold whitespace-nowrap text-muted;
+  }
+
+  th, td {
+    @apply border-b border-line px-3 py-3 align-top;
+  }
+
+  td {
+    @apply text-primary tabular-nums;
+  }
+
+  td small {
+    @apply mt-1 block text-[11px] leading-relaxed whitespace-normal text-muted;
+  }
+
+  details p {
+    @apply mt-3 text-xs leading-relaxed;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    * {
+      transition: none !important;
+    }
+
+  }
+}

@@ -1,0 +1,177 @@
+{
+  "ready": true,
+  "split": "Acak 80/20 sekali dari urutan Excel, random_state=21, tanpa urut waktu",
+  "split_seed": 21,
+  "model_seed": 42,
+  "fold_seed": 42,
+  "training_initial": 16372,
+  "training_count": 14746,
+  "test_count": 4094,
+  "retained_test_count": 3700,
+  "calibration": "5-fold OOF seluruh 80% latihan",
+  "ddof": 1,
+  "minimum_training_per_category": null,
+  "parameter_selection_from_test": false,
+  "seed_selected_after_inspecting_test": true,
+  "source": "models/catboost_global_log_iqr_kategori",
+  "analysis_source": "models/analisis",
+  "routes": {
+    "lengkap": {
+      "spec": {
+        "id": "lengkap__tfidf",
+        "categorical": [
+          "Kanal_Aduan",
+          "Kategori Laporan",
+          "Kelurahan",
+          "Kecamatan",
+          "Unit Penanganan"
+        ]
+      },
+      "parameters": {
+        "depth": 8,
+        "learning_rate": 0.05,
+        "l2_leaf_reg": 1,
+        "random_strength": 3.0,
+        "bagging_temperature": 3.0,
+        "rsm": 1.0
+      },
+      "trees": 2248,
+      "model_source": "models/catboost_global_log_iqr_kategori/lengkap/model.cbm",
+      "processor_source": "models/catboost_global_log_iqr_kategori/lengkap/penyandi.joblib",
+      "calibration_n": 16372,
+      "sigma": 1.1039517672349766,
+      "ddof": 1,
+      "test_used_for_calibration": false,
+      "versi_isian": "lengkap"
+    },
+    "tanpa_unit": {
+      "spec": {
+        "id": "tanpa_unit__tfidf",
+        "categorical": [
+          "Kanal_Aduan",
+          "Kategori Laporan",
+          "Kelurahan",
+          "Kecamatan"
+        ]
+      },
+      "parameters": {
+        "depth": 8,
+        "learning_rate": 0.05,
+        "l2_leaf_reg": 1,
+        "random_strength": 3.0,
+        "bagging_temperature": 3.0,
+        "rsm": 1.0
+      },
+      "trees": 2248,
+      "model_source": "models/catboost_global_log_iqr_kategori/tanpa_unit/model.cbm",
+      "processor_source": "models/catboost_global_log_iqr_kategori/tanpa_unit/penyandi.joblib",
+      "calibration_n": 16372,
+      "sigma": 1.1892322957041317,
+      "ddof": 1,
+      "test_used_for_calibration": false,
+      "versi_isian": "tanpa_unit"
+    },
+    "tanpa_rincian": {
+      "spec": {
+        "id": "tanpa_rincian__kategori",
+        "categorical": [
+          "Kanal_Aduan",
+          "Kategori Laporan",
+          "Kelurahan",
+          "Kecamatan",
+          "Unit Penanganan"
+        ]
+      },
+      "parameters": {
+        "depth": 8,
+        "learning_rate": 0.05,
+        "l2_leaf_reg": 1,
+        "random_strength": 3.0,
+        "bagging_temperature": 3.0,
+        "rsm": 1.0
+      },
+      "trees": 2248,
+      "model_source": "models/catboost_global_log_iqr_kategori/tanpa_rincian/model.cbm",
+      "processor_source": "models/catboost_global_log_iqr_kategori/tanpa_rincian/penyandi.joblib",
+      "calibration_n": 16372,
+      "sigma": 1.1240541587671455,
+      "ddof": 1,
+      "test_used_for_calibration": false,
+      "versi_isian": "tanpa_rincian"
+    },
+    "dasar": {
+      "spec": {
+        "id": "dasar__kategori",
+        "categorical": [
+          "Kanal_Aduan",
+          "Kategori Laporan",
+          "Kelurahan",
+          "Kecamatan"
+        ]
+      },
+      "parameters": {
+        "depth": 8,
+        "learning_rate": 0.05,
+        "l2_leaf_reg": 1,
+        "random_strength": 3.0,
+        "bagging_temperature": 3.0,
+        "rsm": 1.0
+      },
+      "trees": 2248,
+      "model_source": "models/catboost_global_log_iqr_kategori/dasar/model.cbm",
+      "processor_source": "models/catboost_global_log_iqr_kategori/dasar/penyandi.joblib",
+      "calibration_n": 16372,
+      "sigma": 1.2354506713931857,
+      "ddof": 1,
+      "test_used_for_calibration": false,
+      "versi_isian": "dasar"
+    }
+  },
+  "hashes": {
+    "batas_per_kategori.csv": "b4a6ccd7ff537fdae4a12b031d611cca5da55b45d6818b23c1f7390330d9b9e7",
+    "latih.csv": "1ddeb02547105461fd01ee40f14d21f1cb89d48b4a495ce987394697010349f2",
+    "latih_awal.csv": "f3c27f499002d3464fce3ab49b71f641c1be124b2cbf7884d3b7642ec1caed1d",
+    "pembagian.csv": "b940b5385551d1412989a3699ec27c58ca624cb7992258e7354a3accffcc1181",
+    "protokol_sumber.json": "b3c2ddff0692ccca430f3e73c2f11d5bb221b8d7b5be597a5211ff627836165c",
+    "dasar/model.cbm": "605adbf3bde2430fce9f70c1f4723de92f3b9704f80a9b0a90371fbcef6376ce",
+    "dasar/OOF_fold_01.csv": "f21df593078b516d5db1a8fb1f6d971a8ebdd219bce4d72ef03a0b050cc222bd",
+    "dasar/OOF_fold_02.csv": "360a1836e7fa2e12a8b3d69bcd736302048e6d99cead889a71246bf3782b8453",
+    "dasar/OOF_fold_03.csv": "24f446f44e26b1f300077eaef972c7888dc5943be27f8bcc280e7c80f46fe989",
+    "dasar/OOF_fold_04.csv": "408edb1f8a4985ad716abf36a1157f1912adbaab5973dc4ccb0502a4bcbd0aea",
+    "dasar/OOF_fold_05.csv": "b942f769c673c7ed0702acf8a26b8755d766d97a8e4767302a76f7037b124376",
+    "dasar/penyandi.joblib": "4fb8ddbec0fc7f5d671c9bbb50372a6e84ff8424eeeee7b7258275a11748feea",
+    "dasar/prediksi_OOF.csv": "7d1954b8813d6cefcfd2e94e85c35989b22071b6b76b48ce284bf5321e734f3d",
+    "dasar/prediksi_uji.csv": "481e78d348981ced99ec0b13693964d7734f8102a1e2925c502def99a5859628",
+    "dasar/protokol.json": "e90768cba2e88f2d634110478aae7d3cbad10d188404a8cedbea68b939f6cff4",
+    "tanpa_unit/model.cbm": "35b7b5236a42bc624708886bb84ac72e4c41155f654c22689172c80bdf8ecc25",
+    "tanpa_unit/OOF_fold_01.csv": "7c72f89fa363220438418132358019db8274dd3c80f3f2b7552053e2e95ed628",
+    "tanpa_unit/OOF_fold_02.csv": "0197fa90538afdcdde010c17fef507332f93ebecdc8c9f0189db477164ebf27c",
+    "tanpa_unit/OOF_fold_03.csv": "1446c6a224f3cba65f8684f643c932ad9ee7e527ec184a0803d11788abc7e8c7",
+    "tanpa_unit/OOF_fold_04.csv": "f829c8ab4eefce7c2bfb585f581826792798fd1e248c7c60d4b09b57fedf5a38",
+    "tanpa_unit/OOF_fold_05.csv": "d073abaaab31002586f92de46de24af4ac07abd8a66da50644c803603aa512ef",
+    "tanpa_unit/penyandi.joblib": "62fa47e369c8eec4656fe4cfe96e708022f5d7f90743487fd4c0213f0840359b",
+    "tanpa_unit/prediksi_OOF.csv": "9efbab19f77784a1481771e77548bc9e3c72697f47f435e49fc11830fb7b297a",
+    "tanpa_unit/prediksi_uji.csv": "55f96ebc14868ba78180b3ef082644f4f4e426734526c917e067439140452b0a",
+    "tanpa_unit/protokol.json": "f30d0478b46389f5869d9ecc3bc30fd1334f0b3d2c3d89c0f0d0ccf69920b589",
+    "lengkap/model.cbm": "acf4076467a90793649d573b34727bbde2c4a08e8b0eff1d68ee9fe1a640e9a1",
+    "lengkap/OOF_fold_01.csv": "f035a2dd462e7e7806608d4e0a98ebfb668540cd11adf30e4b79e02d5a8ea1e4",
+    "lengkap/OOF_fold_02.csv": "a24623a12ce45d14751116772f6a84cac8eb787a6b2dc88b06214f0b145ffd09",
+    "lengkap/OOF_fold_03.csv": "03b74d635949473fdfa6383a9a7ad9c6d69ad470c1a9b3ea7beb8d34e2f09ae2",
+    "lengkap/OOF_fold_04.csv": "5e49ab40f5bd25a4b297ab59e39bbb7d5537601a27caa20bddbf85c3640ad8d4",
+    "lengkap/OOF_fold_05.csv": "b5efe1860bdd06aa5c85123c25db01ed5900c039f40dd63617d941d92d47638b",
+    "lengkap/penyandi.joblib": "3d714a65304bd6eb28f4606d2d6c66ae9edaaffd17ee454e0394fc5cc35f81a7",
+    "lengkap/prediksi_OOF.csv": "5cda3cccd3dd32f2bc13de7073f71e2b0a052a5215265f325d3251adad2b67b6",
+    "lengkap/prediksi_uji.csv": "190bc76afcfdf57efa6efc9b0a6aa6339e745d7317c6182d27ee9596f65803bd",
+    "lengkap/protokol.json": "ee05f179b1766f5a19d214800f6a490b5722928ce953adde98cc57720bb961e0",
+    "tanpa_rincian/model.cbm": "61c4fe0fefbb02eec3ab23372b85f470a690213dea87abb200b2cb7c1419ff75",
+    "tanpa_rincian/OOF_fold_01.csv": "248e76d484f989ac92b31c17d6af7848cc6a09c643290d9079f1a4b63142add5",
+    "tanpa_rincian/OOF_fold_02.csv": "eb1fd3f8ea2747fb9825dabd3420a86877dc42720e3e45a2780512ffae3b0878",
+    "tanpa_rincian/OOF_fold_03.csv": "4fb8e475f5f13c1d3aeae3b92d85404f868828ba5bf052cbe17b7f6b43c60001",
+    "tanpa_rincian/OOF_fold_04.csv": "1b3fd9640288bc997e0fc8ed8e86e6adfce759f3267fac6530dbb9367a1881e7",
+    "tanpa_rincian/OOF_fold_05.csv": "ea2ecb78a911cc76c55afac3559eba4b7450dedcdec879ad2ed373765e85e12b",
+    "tanpa_rincian/penyandi.joblib": "2b9f9aec409742e30f87a8d26b20b40bc945b6d44c540b78f6f66f0a3d8b98d1",
+    "tanpa_rincian/prediksi_OOF.csv": "317c5ed641ca0a52cadbd5f1b23f85939d71136ca36adfc658f75f3925ee3f5b",
+    "tanpa_rincian/prediksi_uji.csv": "6befa404cf062027cb8ed8edb2e3649bc60470896717c72dc0cd185171717387",
+    "tanpa_rincian/protokol.json": "44068ff9b09b9a0fef772b99d0ef89e4a62e4c09f2f92f3defb7c9a520ff06cc"
+  }
+}

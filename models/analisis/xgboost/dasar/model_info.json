@@ -1,0 +1,19 @@
+{
+  "parameters": {
+    "max_depth": 10,
+    "learning_rate": 0.08,
+    "min_child_weight": 3,
+    "reg_lambda": 0.1,
+    "reg_alpha": 0.1,
+    "subsample": 0.8,
+    "colsample_bytree": 0.8,
+    "gamma": 0.0
+  },
+  "trees": 70,
+  "model_path": "model.ubj",
+  "processor_path": "penyandi.joblib",
+  "hashes": {
+    "model.ubj": "82e841fc4243156c9892a97b7d0f230d907f2175f4402db1536e07484db51731",
+    "penyandi.joblib": "253a41cc52bc96fbc66083d490dde1efddb52eedef8a3ea2d8b58cf29cf53207"
+  }
+}

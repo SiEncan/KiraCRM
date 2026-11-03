@@ -1,0 +1,17 @@
+{
+  "parameters": {
+    "n_estimators": 200,
+    "min_samples_leaf": 1,
+    "max_features": 1.0,
+    "max_depth": 16,
+    "max_samples": 1.0,
+    "min_samples_split": 2
+  },
+  "trees": 200,
+  "model_path": "model.joblib",
+  "processor_path": "penyandi.joblib",
+  "hashes": {
+    "model.joblib": "16484bd3ed555d8016ce48d0ea735af3aae47cce183f895f0efde8923fec68a6",
+    "penyandi.joblib": "bd2a7fb58cd3db7758ce9b6f0162a76f937da2394f67773fd1fe40c5d04cc194"
+  }
+}

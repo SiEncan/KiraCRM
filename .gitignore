@@ -1,0 +1,31 @@
+# Paket Python dan file lokal.
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+notebooks/
+
+# Paket Node.
+node_modules/
+
+#  editor, log, dan backup.
+.vscode/
+.idea/
+backups/
+*.log
+server_state.json
+verification.json
+*.bak
+*.tmp
+.DS_Store
+Thumbs.db
+
+# secret.
+.env
+.env.*
+!.env.example
+*token*.txt
+*.pem
+*.key

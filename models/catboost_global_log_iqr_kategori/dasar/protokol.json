@@ -1,0 +1,27 @@
+{
+  "route": "base",
+  "spec": {
+    "id": "dasar__kategori",
+    "categorical": [
+      "Kanal_Aduan",
+      "Kategori Laporan",
+      "Kelurahan",
+      "Kecamatan"
+    ]
+  },
+  "parameters": {
+    "depth": 8,
+    "learning_rate": 0.05,
+    "l2_leaf_reg": 1,
+    "random_strength": 3.0,
+    "bagging_temperature": 3.0,
+    "rsm": 1.0
+  },
+  "trees": 2248,
+  "model_source": "C:\\Users\\TUF F15 GAMING\\Documents\\.skripsi\\hasil_eksperimen_crm\\notebook_model_akhir_rapi\\20261028_092110\\dasar__kategori\\cb\\model.cbm",
+  "processor_source": "C:\\Users\\TUF F15 GAMING\\Documents\\.skripsi\\hasil_eksperimen_crm\\notebook_model_akhir_rapi\\20261028_092110\\dasar__kategori\\cb\\penyandi.joblib",
+  "calibration_n": 16372,
+  "sigma": 1.2354506713931857,
+  "ddof": 1,
+  "test_used_for_calibration": false
+}

@@ -1,0 +1,61 @@
+{
+  "LATIH_ULANG": false,
+  "jumlah_model": 18,
+  "jumlah_susunan_masukan": 6,
+  "notebook_tuning": "Tuning_Tiga_Model_5Fold_Dalam_80_Latihan_IQR_Kategori_CRM_20261022.ipynb",
+  "pemilihan_parameter_dari_uji": false,
+  "pembagian": "Acak 80/20 sekali dari urutan Excel, tanpa urut waktu",
+  "seed_pembagian": 21,
+  "seed_model_dan_encoding": 42,
+  "seed_dipilih_setelah_melihat_hasil_lima_seed": true,
+  "membaca_daftar_pembagian_lama": false,
+  "jumlah_latih_awal": 16372,
+  "jumlah_latih_setelah_IQR": 14746,
+  "jumlah_uji": 4094,
+  "jumlah_uji_lolos_IQR": 3700,
+  "parameter_CB": {
+    "depth": 8,
+    "learning_rate": 0.05,
+    "l2_leaf_reg": 1,
+    "random_strength": 3.0,
+    "bagging_temperature": 3.0,
+    "rsm": 1.0
+  },
+  "pohon_CB": 2248,
+  "parameter_RF": {
+    "n_estimators": 200,
+    "min_samples_leaf": 1,
+    "max_features": 1.0,
+    "max_depth": 16,
+    "max_samples": 1.0,
+    "min_samples_split": 2
+  },
+  "parameter_XGB": {
+    "max_depth": 10,
+    "learning_rate": 0.08,
+    "min_child_weight": 3,
+    "reg_lambda": 0.1,
+    "reg_alpha": 0.1,
+    "subsample": 0.8,
+    "colsample_bytree": 0.8,
+    "gamma": 0.0
+  },
+  "pohon_XGB": 70,
+  "SD_OOF": {
+    "lengkap__tfidf": 1.1039517672349766,
+    "tanpa_unit__tfidf": 1.1892322957041317,
+    "tanpa_rincian__kategori": 1.1240541587671455,
+    "dasar__kategori": 1.2354506713931857
+  },
+  "jumlah_tetangga": 30,
+  "versi_paket": {
+    "numpy": "1.26.4",
+    "pandas": "2.2.1",
+    "scipy": "1.12.0",
+    "scikit-learn": "1.4.1.post1",
+    "catboost": "1.2.8",
+    "xgboost": "2.1.4",
+    "joblib": "1.6.0"
+  },
+  "mode_baca_model_mencocokkan_seluruh_prediksi": true
+}
