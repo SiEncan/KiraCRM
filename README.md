@@ -1,113 +1,93 @@
 # KiraCRM
 
-Website estimasi durasi pengaduan CRM Jakarta Selatan: https://kiracrm.online.
-Backend: Flask dengan server production Waitress. Frontend: HTML, Tailwind CSS,
-JavaScript, dan Plotly. Gunakan Python 3.12 seperti environment penelitian.
+<p align="center">
+  <img src="static/images/preview_image.png" alt="Gambar Preview KiraCRM" />
+</p>
 
-## Menjalankan aplikasi
+> Aplikasi web untuk memperkirakan waktu penyelesaian pengaduan Cepat Respon Masyarakat (CRM) di Jakarta Selatan.
 
-Dari folder `demo_crm`:
+[Buka KiraCRM](https://kiracrm.online) · [Jalankan di komputer sendiri](#menjalankan-aplikasi)
 
-```powershell
-python -m venv .venv
-.venv\Scripts\activate
-python -m pip install -r requirements.txt
-python server.py
-```
+---
 
-Buka http://127.0.0.1:8765/. Terminal tetap menyala sampai Ctrl+C ditekan.
-Pada laptop penelitian, dari folder `.skripsi` gunakan:
+## 📖 Tentang KiraCRM
 
-```powershell
-.venv_crm\Scripts\python.exe demo_crm\server.py
-```
+KiraCRM dibuat sebagai bagian dari penelitian skripsi. Pengguna mengisi informasi seperti kategori, lokasi, dan waktu masuk laporan. Aplikasi menampilkan perkiraan dalam jam, rentang waktu penyelesaian, dan pembanding dari laporan terdahulu. Perkiraan bisa dicoba lewat tombol **Isi contoh**.
 
-Server memakai Waitress, bukan server pengembangan Flask. Model dimuat sekali
-saat startup. Tidak ada training ketika pengguna menghitung estimasi.
-Port lain: `python server.py --port 8766`. Jumlah thread: `--threads 4`.
+## ✨ Fitur aplikasi
 
-Waitress menggunakan satu proses dengan 4 thread secara default, agar model
-tersimpan tidak diduplikasi dalam beberapa proses. Batas koneksi 100, body
-permintaan 32.000 byte, dan header 16.384 byte. Traceback internal tidak ditampilkan
-kepada pengunjung. Batas koneksi bukan pembatasan jumlah permintaan per pengguna.
+### Estimasi warga
 
-## Cloudflare Tunnel
+- **Perkiraan waktu selesai.** CatBoost menghasilkan satu perkiraan dalam jam dan rentang di bawahnya.
+- **Rincian dan unit opsional.** Jika salah satunya belum diketahui, aplikasi otomatis memakai model yang sesuai dengan kolom yang terisi.
+- **Pembanding.** Lihat ringkasan waktu penyelesaian laporan terdahulu serta acuan SK Sekda jika ada rincian yang cocok. Tautan PDF membuka halaman sumbernya.
 
-Route `kiracrm.online` tetap menuju `http://localhost:8765`.
-Server mendengarkan pada `127.0.0.1`; HTTPS publik ditangani Cloudflare.
-Jalankan aplikasi dan connector tunnel pada komputer yang sama.
-Token tunnel disimpan di luar repository. Pembatasan permintaan publik dan
-pemblokiran pemindaian bot dapat diatur melalui Cloudflare.
+### Analisis model
 
-## Susunan folder
+- **Bandingkan 3 algoritma.** Lihat estimasi CatBoost, Random Forest, dan XGBoost untuk isian yang sama, beserta hasil evaluasinya.
+- **Lihat laporan yang paling mirip.** Aplikasi mencari 30 laporan yang paling sering jatuh di daun CatBoost yang sama dengan isian pengguna. Jika memilih data latih dan data uji sekaligus, aplikasi mengambil 30 laporan dari masing-masing sumber.
+- **Telusuri hasilnya.** Histogram menunjukkan durasi aktual kelompok terpilih. Grafik prediksi vs. aktual bisa diperbesar, digeser, dan difilter menurut kelompok laporan.
+
+---
+
+## 🛠 Cara kerja
+
+1. Browser mengambil pilihan formulir lewat `GET /api/options`.
+2. Saat pengguna menekan tombol hitung, `POST /api/predict` mengirim isian ke Flask. Backend memilih salah satu dari 4 versi model CatBoost, mengubah isian ke format yang dikenali model, lalu menghitung perkiraan dan rentangnya.
+3. `POST /api/context` mengambil laporan pembanding dan acuan SK Sekda. Pada halaman analisis, permintaan ini juga mengambil estimasi 3 model dan data grafik. Pemilih sumber latih atau uji memakai `POST /api/analysis`.
+
+### Model dan hasil uji
+
+Data dibagi acak 80/20 dengan seed 21. Batas atas IQR dihitung untuk tiap kategori dari data latih. Dari 16.372 laporan latih, 14.746 dipakai untuk melatih model akhir. Model mempelajari target `log(1 + durasi dalam jam)`, lalu hasilnya dikembalikan ke jam. Rentang dihitung dari simpangan baku error prediksi *out-of-fold* (OOF) pada 5-fold di data latih.
+
+| Model | Data uji | MAE | RMSE | R² | Median error |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| CatBoost dengan isian lengkap | 3.700 laporan lolos IQR | 61,74 jam | 183,43 jam | 0,3677 | 22,84 jam |
+
+Skor di atas menggambarkan kinerja pada laporan uji yang durasi aktualnya berada dalam batas IQR. Laporan baru tetap bisa membutuhkan waktu lebih lama dari perkiraan.
+
+## 🧰 Tech stack
+
+- **Frontend** · HTML, Tailwind CSS, JavaScript, dan Plotly.
+- **Backend** · Python 3.12 dan Flask. `server.py` menjalankan Waitress pada local, sementara Vercel memuat aplikasi dari `app.py`.
+- **Machine learning** · CatBoost, Random Forest (`scikit-learn`), dan XGBoost.
+
+## Struktur proyek
 
 ```text
-demo_crm/
-  server.py           # Flask, endpoint, dan startup Waitress
-  engine.py           # Model, pengolahan input, estimasi, dan rentang
-  presentation.py     # Laporan pembanding, SK, serta analisis
-  requirements.txt    # Versi paket Python
-  templates/          # HTML
-  static/             # JavaScript, CSS, gambar, dan pustaka frontend
-  models/             # Model, encoding, serta data pendukung aplikasi
-  data/               # Pencocokan rincian dengan SK Sekda
-  public/documents/   # Dua PDF SK Sekda, disajikan langsung oleh Vercel
-  tests/              # Tes aplikasi aktif
-  package.json        # Perintah membangun CSS
-  pnpm-lock.yaml      # Versi dependensi frontend
+KiraCRM/
+├── app.py              # Entry point Flask untuk Vercel
+├── server.py           # Endpoint Flask dan startup Waitress
+├── engine.py           # Encoding, prediksi, dan rentang perkiraan
+├── presentation.py     # Pembanding historis, SK Sekda, dan data grafik
+├── templates/          # HTML halaman warga dan analisis
+├── static/             # JavaScript, CSS, logo, dan Plotly
+├── models/             # Model terlatih, encoder, dan data pendukung
+├── data/               # Pemetaan rincian laporan ke SK Sekda
+├── public/documents/   # PDF SK Sekda
+└── tests/              # Tes aplikasi
 ```
 
-Folder aplikasi memakai path relatif dan dapat dipindahkan.
-Model hanya dibuka dari file tepercaya yang sudah dipasang.
-`model_info.json` mencatat model dan encoding pasangannya.
-Model sebenarnya tersimpan sebagai `.cbm`, `.joblib`, atau `.ubj`.
+---
 
-## Model aplikasi
+<a id="menjalankan-aplikasi"></a>
 
-Warga memakai CatBoost dengan target log(1 + jam) dan IQR per kategori.
-Halaman analisis juga menghitung prediksi Random Forest serta XGBoost.
-Setiap algoritma memiliki 4 versi sesuai kelengkapan rincian dan unit.
+## 🚀 Menjalankan aplikasi
 
-- Pembagian acak 80/20 dari urutan Excel, seed 21; seed internal model/encoding/fold 42.
-- Latihan awal 16.372 dan uji awal 4.094. Setelah IQR: latihan 14.746 dan uji 3.700.
-- CatBoost lengkap pada uji lolos IQR: MAE 61,74 jam; RMSE 183,43 jam;
-  R² 0,3677; median error 22,84 jam.
-- Rentang berasal dari SD error log OOF latihan, bukan MAE atau 30 laporan terdekat.
-
-Skor tersebut berlaku pada uji lolos IQR. Status lolos IQR memerlukan durasi
-aktual, yang belum diketahui ketika warga mengisi laporan baru. Laporan baru
-tetap dapat membutuhkan waktu lebih lama dari perkiraan.
-
-## Pengujian
+Gunakan Python 3.12. Dari PowerShell, jalankan:
 
 ```powershell
-python -m unittest discover -s tests -v
+git clone https://github.com/SiEncan/KiraCRM.git
+cd KiraCRM
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe server.py
 ```
 
-Tes memerlukan paket Python dan file model aplikasi yang disertakan.
+Buka [localhost:8765](http://127.0.0.1:8765/). Model sudah disertakan di repositori dan dimuat saat server mulai berjalan.
 
-## Mengubah tampilan
-
-Class Tailwind ada di `templates/index.html`; aturan dasar ada di
-`static/css/tailwind.css`. Node.js hanya diperlukan saat membangun CSS:
+### Menjalankan tes
 
 ```powershell
-pnpm install --frozen-lockfile
-pnpm run build:css
+.\.venv\Scripts\python.exe -m unittest discover -s tests -v
 ```
-
-CSS hasil build tetap disertakan di Git. `.gitignore` mengecualikan dependensi
-lokal, cache Python, log, backup, environment lokal, dan file rahasia.
-File model yang diperlukan aplikasi tetap disertakan.
-
-## Alat penelitian di luar aplikasi
-
-Notebook dan hasil eksperimen berada di luar `demo_crm`.
-Alat pemasangan model terbaru: `../tools_crm/prepare_final_80_model.py` pada
-workspace penelitian. Backup, launcher alternatif, installer lama, dan verifikasi
-lama diarsipkan di `../arsip_demo_crm_20261103/`. Kedua folder tersebut tidak
-diperlukan untuk menjalankan aplikasi yang modelnya sudah terpasang.
-
-## Notebook penelitian
-
-Dua notebook tersedia di [notebooks](notebooks/README.md): model utama dan pencarian hyperparameter. Kebutuhan data serta arsip eksperimennya dijelaskan di folder tersebut.
