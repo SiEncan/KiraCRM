@@ -11,6 +11,7 @@ from pathlib import Path
 from urllib.parse import urlsplit
 
 from flask import Flask, jsonify, render_template, request, send_file
+from paste.translogger import TransLogger
 from werkzeug.exceptions import BadRequest, RequestEntityTooLarge
 from threadpoolctl import threadpool_limits
 from waitress import serve
@@ -19,7 +20,7 @@ from engine import Engine
 from presentation import Presentation
 
 BASE_FOLDER = Path(__file__).resolve().parent
-DOCUMENT_FOLDER = BASE_FOLDER / "documents"
+DOCUMENT_FOLDER = BASE_FOLDER / "public" / "documents"
 APP_ID = "crm-local-demo-20261013"
 DEFAULT_PORT = 8765
 
@@ -66,10 +67,7 @@ def user_error_message(error):
     return input_messages.get(message, INVALID_FORM_MESSAGE)
 
 # Hanya dua PDF ini yang boleh dibaca melalui alamat /documents/.
-DOCUMENT_FILES = {
-    "sk-99-2022.pdf": "SK_Sekda_99_Tahun_2022_CRM.pdf",
-    "sk-175-2025.pdf": "SK_Sekda_175_Tahun_2025_CRM.pdf",
-}
+DOCUMENT_FILES = {"sk-99-2022.pdf", "sk-175-2025.pdf"}
 
 
 # Model dan aplikasi disiapkan saat server nyala. Endpoint di bawah baru jalan setelah ada
@@ -232,12 +230,10 @@ def create_app(prediction_engine=None, display_service=None, port=DEFAULT_PORT):
 
         # Cocokkan nama di URL dengan dua PDF yang tersedia. Nama lain ditolak supaya URL ini
         # tidak bisa membuka file lain di komputer.
-        source_name = DOCUMENT_FILES.get(filename)
-
-        if source_name is None:
+        if filename not in DOCUMENT_FILES:
             return jsonify(error="Tidak ditemukan."), 404
 
-        document_path = DOCUMENT_FOLDER / source_name
+        document_path = DOCUMENT_FOLDER / filename
 
         if not document_path.is_file():
             return jsonify(error="PDF sumber tidak tersedia."), 404
@@ -286,7 +282,7 @@ def main(open_browser=False):
     # Waitress memakai satu proses supaya model tidak diduplikasi di RAM.
     with threadpool_limits(limits=4):
         serve(
-            app,
+            TransLogger(app),
             host="127.0.0.1",
             port=arguments.port,
             threads=arguments.threads,

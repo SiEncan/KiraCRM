@@ -51,7 +51,7 @@ demo_crm/
   static/             # JavaScript, CSS, gambar, dan pustaka frontend
   models/             # Model, encoding, serta data pendukung aplikasi
   data/               # Pencocokan rincian dengan SK Sekda
-  documents/          # Dua PDF SK Sekda
+  public/documents/   # Dua PDF SK Sekda, disajikan langsung oleh Vercel
   tests/              # Tes aplikasi aktif
   package.json        # Perintah membangun CSS
   pnpm-lock.yaml      # Versi dependensi frontend

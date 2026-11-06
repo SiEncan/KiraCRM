@@ -215,7 +215,7 @@ function switchPage() {
     ? "Hitung analisis"
     : "Lihat perkiraan waktu";
   document.title =
-    (research ? "Analisis model" : "Estimasi laporan") + " | KiraCRM";
+    "KiraCRM | " + (research ? "Analisis model" : "Estimasi laporan");
 
   if (research && appState.context) {
     renderResearchDashboard(appState.context);
