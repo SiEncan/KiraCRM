@@ -29,3 +29,6 @@ Thumbs.db
 *token*.txt
 *.pem
 *.key
+
+.vercel
+.env*

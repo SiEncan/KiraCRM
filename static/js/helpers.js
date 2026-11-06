@@ -94,7 +94,6 @@ async function postJSON(url, body) {
   // await menunggu jawaban tanpa menghentikan tampilan loading.
   let response;
 
-  console.log("Mengirim permintaan ke layanan:", url, body);
   try {
     response = await fetch(url, {
       method: "POST",
