@@ -1,0 +1,2 @@
+# Pertahankan byte paket model agar SHA-256 cocok pada Windows dan Linux.
+/models/** -text
