@@ -51,14 +51,17 @@ Skor di atas menggambarkan kinerja pada laporan uji yang durasi aktualnya berada
 ## 🧰 Tech stack
 
 - **Frontend** · HTML, Tailwind CSS, JavaScript, dan Plotly.
-- **Backend** · Python 3.12 dan Flask. `server.py` menjalankan Waitress pada local, sementara Vercel memuat aplikasi dari `app.py`.
+- **Backend** · Python 3.12 dan Flask. `server.py` menjalankan Waitress pada local. Di Vercel, `api/index.py` memuat aplikasi dari `app.py`.
 - **Machine learning** · CatBoost, Random Forest (`scikit-learn`), dan XGBoost.
 
 ## Struktur proyek
 
 ```text
 KiraCRM/
-├── app.py              # Entry point Flask untuk Vercel
+├── api/index.py        # Entry point API untuk Vercel
+├── app.py              # Membuat aplikasi Flask untuk API
+├── build_frontend.py   # Menyiapkan HTML, JSON, dan aset untuk CDN
+├── form_options.py     # Membuat daftar pilihan dari data latih
 ├── server.py           # Endpoint Flask dan startup Waitress
 ├── engine.py           # Encoding, prediksi, dan rentang perkiraan
 ├── presentation.py     # Pembanding historis, SK Sekda, dan data grafik
@@ -88,7 +91,7 @@ python -m venv .venv
 
 Buka [localhost:8765](http://127.0.0.1:8765/). Model sudah disertakan di repositori dan dimuat saat server mulai berjalan.
 
-Pada Vercel, `python build_frontend.py` berjalan otomatis saat build. Script ini menyiapkan HTML, `options.json`, dan aset di `public/`. Hasil build disajikan lewat CDN. Saat dijalankan dengan Waitress, Flask melayani page dan address `/options.json` yang sama.
+Pada Vercel, `python3 build_frontend.py` berjalan otomatis saat build. Script ini menyiapkan HTML, `options.json`, dan aset di `public/`. Hasil build disajikan lewat CDN, sedangkan permintaan `/api/` diteruskan ke Flask melalui `api/index.py`. Saat dijalankan dengan Waitress, Flask melayani page dan address `/options.json` yang sama.
 
 ### Menjalankan tes
 

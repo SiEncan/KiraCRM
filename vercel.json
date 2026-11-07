@@ -1,7 +1,10 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "python build_frontend.py",
-  "rewrites": [{ "source": "/", "destination": "/index.html" }],
+  "framework": null,
+  "installCommand": "",
+  "buildCommand": "python3 build_frontend.py",
+  "outputDirectory": "public",
+  "rewrites": [{ "source": "/api/:path*", "destination": "/api/index" }],
   "headers": [
     {
       "source": "/",
@@ -25,7 +28,7 @@
     }
   ],
   "functions": {
-    "app.py": {
+    "api/index.py": {
       "excludeFiles": "{public,static,templates,tests,notebooks}/**"
     }
   }

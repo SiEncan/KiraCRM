@@ -10,8 +10,7 @@ import numpy as np
 import pandas as pd
 from scipy import sparse
 
-ROOT = Path(__file__).resolve().parent
-MODEL_DIR = Path(__file__).resolve().parent / "models/catboost_global_log_iqr_kategori"
+from form_options import MODEL_DIR, ROOT, build_form_options
 # Empat versi ini mengikuti kolom yang diisi, bukan kategori laporan. Rincian dan unit bisa
 # kosong, jadi tiap versi punya model sendiri.
 MODEL_PER_RANGKAIAN = {
@@ -44,36 +43,6 @@ def format_count(value):
     """Tampilkan jumlah laporan seperti 14746 menjadi 14.746."""
 
     return format(int(value), ",d").replace(",", ".")
-
-
-def build_form_options(data_latih, data_latih_iqr):
-    """Susun daftar pilihan dari paket data latih aplikasi."""
-
-    kelompok_kategori = data_latih.groupby("Kategori Laporan")
-    kelompok_kecamatan = data_latih.groupby("Kecamatan")
-
-    return dict(
-        kategori_laporan=sorted(data_latih["Kategori Laporan"].unique().tolist()),
-        rincian_per_kategori={
-            kategori: sorted(group.rincian_asli.unique().tolist())
-            for kategori, group in kelompok_kategori
-        },
-        kelurahan_per_kecamatan={
-            kecamatan: sorted(group.Kelurahan.unique().tolist())
-            for kecamatan, group in kelompok_kecamatan
-        },
-        kanal_aduan=sorted(data_latih.Kanal_Aduan.unique().tolist()),
-        unit_penanganan=sorted(data_latih["Unit Penanganan"].unique().tolist()),
-        unit_per_kategori={
-            kategori: sorted(group["Unit Penanganan"].unique().tolist())
-            for kategori, group in kelompok_kategori
-        },
-        source=(
-            f"Pilihan diambil dari {format_count(len(data_latih))} laporan latihan acak 80%. "
-            "Pilihan tidak dipelajari dari 20% uji."
-        ),
-        kategori_dalam_latihan=sorted(data_latih_iqr["Kategori Laporan"].unique().tolist()),
-    )
 
 
 def format_number(value, decimals=2):
@@ -632,7 +601,9 @@ class Engine:
 
         # Dropdown tetap memakai nama rincian asli supaya pengguna cukup melihat Lain-lain.
         # Pilihannya diambil dari data latihan awal.
-        self.options = build_form_options(data_latih, self.data_latih_iqr)
+        self.options = build_form_options(
+            data_latih.to_dict("records"), self.data_latih_iqr["Kategori Laporan"]
+        )
 
     def load_catboost_bundle(self, kunci_model):
         """Muat CatBoost dan encoding yang tersimpan saat latihan."""
