@@ -5,7 +5,10 @@
     "watch:css": "tailwindcss -i ./static/css/tailwind.css -o ./static/vendor/tailwind.generated.css --minify --watch"
   },
   "devDependencies": {
-    "tailwindcss": "^4.3.3",
-    "@tailwindcss/cli": "^4.3.3"
+    "@tailwindcss/cli": "^4.3.3",
+    "tailwindcss": "^4.3.3"
+  },
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1"
   }
 }

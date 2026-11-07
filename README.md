@@ -51,6 +51,7 @@ Skor di atas menggambarkan kinerja pada laporan uji yang durasi aktualnya berada
 ## 🧰 Tech stack
 
 - **Frontend** · HTML, Tailwind CSS, JavaScript, dan Plotly.
+- **Analytics** · Vercel Web Analytics untuk jumlah pengunjung dan page view.
 - **Backend** · Python 3.12 dan Flask. `server.py` menjalankan Waitress pada local. Di Vercel, `api/index.py` memuat aplikasi dari `app.py`.
 - **Machine learning** · CatBoost, Random Forest (`scikit-learn`), dan XGBoost.
 

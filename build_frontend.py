@@ -23,6 +23,14 @@ def main():
     # Sumber HTML tetap satu untuk Waitress dan Vercel.
     copy2(ROOT / "templates" / "index.html", folder_public / "index.html")
     copytree(ROOT / "static", folder_public / "static", dirs_exist_ok=True)
+
+    # Salin paket yang dipasang npm agar bisa diimpor langsung oleh browser.
+    paket_analytics = ROOT / "node_modules" / "@vercel" / "analytics"
+    folder_vendor = folder_public / "static" / "vendor" / "vercel-analytics"
+    folder_vendor.mkdir(exist_ok=True)
+    copy2(paket_analytics / "dist" / "index.mjs", folder_vendor / "index.mjs")
+    copy2(paket_analytics / "dist" / "index.mjs.map", folder_vendor / "index.mjs.map")
+    copy2(paket_analytics / "LICENSE", folder_vendor / "LICENSE")
     print("Halaman, pilihan formulir, dan aset siap di folder public/.")
 
 
