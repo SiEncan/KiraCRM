@@ -72,15 +72,16 @@ DOCUMENT_FILES = {"sk-99-2022.pdf", "sk-175-2025.pdf"}
 
 # Model dan aplikasi disiapkan saat server nyala. Endpoint di bawah baru jalan setelah ada
 # request dari browser.
-def create_app(prediction_engine=None, display_service=None, port=DEFAULT_PORT):
+def create_app(prediction_engine=None, display_service=None, port=DEFAULT_PORT, *, serve_frontend=True):
     """Siapkan Flask, model, dan alamat layanan aplikasi.
 
     Engine memuat tiga algoritma untuk empat versi isian saat server dimulai.
     Daun laporan uji lolos IQR disiapkan agar pencarian 30 laporan mirip cepat.
     Dua parameter pertama juga memudahkan pengujian dengan model pengganti.
+    serve_frontend=False dipakai Vercel karena halaman disajikan dari CDN.
     """
 
-    app = Flask(__name__)
+    app = Flask(__name__, static_folder="static" if serve_frontend else None)
     app.config["MAX_CONTENT_LENGTH"] = MAX_INPUT_BYTES
     app.json.ensure_ascii = False
     app.json.sort_keys = False
@@ -180,25 +181,22 @@ def create_app(prediction_engine=None, display_service=None, port=DEFAULT_PORT):
                 500,
             )
 
-    @app.get("/")
-    def home():
-        """Tampilkan halaman HTML dari folder templates."""
+    # Waitress melayani halaman dan pilihannya saat aplikasi dijalankan di komputer sendiri.
+    # Di Vercel, kedua alamat ini dilayani oleh CDN dari hasil build_frontend.py.
+    if serve_frontend:
+        @app.get("/")
+        def home():
+            return render_template("index.html")
 
-        return render_template("index.html")
+        @app.get("/options.json")
+        def form_options():
+            return jsonify(prediction_engine.options)
 
     @app.get("/api/health")
     def health():
         """Dipakai pembuka demo untuk memeriksa apakah server sudah siap."""
 
         return jsonify(app=APP_ID, ready=True)
-
-    # Saat halaman dibuka, JavaScript mengambil pilihan dropdown lewat sini. Daftarnya sudah
-    # dibuat dari data latih saat server nyala.
-    @app.get("/api/options")
-    def form_options():
-        """Kirim daftar kategori, rincian, lokasi, kanal, dan unit."""
-
-        return jsonify(prediction_engine.options)
 
     # Klik hitung masuk ke sini dulu untuk mendapatkan estimasi CatBoost dan rentang dari
     # error OOF.

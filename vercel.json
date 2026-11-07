@@ -1,8 +1,32 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "python build_frontend.py",
+  "rewrites": [{ "source": "/", "destination": "/index.html" }],
+  "headers": [
+    {
+      "source": "/",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:; frame-ancestors 'none'; base-uri 'none'"
+        }
+      ]
+    },
+    {
+      "source": "/index.html",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:; frame-ancestors 'none'; base-uri 'none'"
+        }
+      ]
+    }
+  ],
   "functions": {
     "app.py": {
-      "excludeFiles": "{public,tests,notebooks}/**"
+      "excludeFiles": "{public,static,templates,tests,notebooks}/**"
     }
   }
 }

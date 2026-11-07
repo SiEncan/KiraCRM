@@ -32,3 +32,8 @@ Thumbs.db
 
 .vercel
 .env*
+
+# Dibuat otomatis saat build Vercel.
+/public/index.html
+/public/options.json
+/public/static/

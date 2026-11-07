@@ -75,11 +75,22 @@ class CurrentAppTests(unittest.TestCase):
     def test_only_used_api_routes_remain(self):
         with self.app.test_client() as client:
             base_url = "http://127.0.0.1:8765"
-            self.assertEqual(client.get("/api/options", base_url=base_url).status_code, 200)
+            self.assertEqual(client.get("/", base_url=base_url).status_code, 200)
+            options = client.get("/options.json", base_url=base_url)
+            self.assertEqual(options.status_code, 200)
+            self.assertEqual(options.json, self.engine.options)
+            self.assertEqual(client.get("/api/options", base_url=base_url).status_code, 404)
             self.assertEqual(client.get("/api/health", base_url=base_url).status_code, 200)
 
         for path in ("/api/compare", "/api/neighbors"):
             self.assertEqual(self.post(path, self.report).status_code, 404)
+
+    def test_vercel_app_uses_cdn_for_frontend(self):
+        api_app = create_app(self.engine, self.presentation, serve_frontend=False)
+        with api_app.test_client() as client:
+            self.assertEqual(client.get("/api/health").status_code, 200)
+            for path in ("/", "/options.json", "/api/options", "/static/js/app.js"):
+                self.assertEqual(client.get(path).status_code, 404)
 
 
 if __name__ == "__main__":

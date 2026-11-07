@@ -28,11 +28,13 @@ KiraCRM dibuat sebagai bagian dari penelitian skripsi. Pengguna mengisi informas
 - **Lihat laporan yang paling mirip.** Aplikasi mencari 30 laporan yang paling sering jatuh di daun CatBoost yang sama dengan isian pengguna. Jika memilih data latih dan data uji sekaligus, aplikasi mengambil 30 laporan dari masing-masing sumber.
 - **Telusuri hasilnya.** Histogram menunjukkan durasi aktual kelompok terpilih. Grafik prediksi vs. aktual bisa diperbesar, digeser, dan difilter menurut kelompok laporan.
 
+Plotly dimuat saat grafik analisis diperlukan. Formulir warga bisa dipakai tanpa menunggu library grafik.
+
 ---
 
 ## 🛠 Cara kerja
 
-1. Browser mengambil pilihan formulir lewat `GET /api/options`.
+1. Browser mengambil halaman dan `options.json`. Saat deploy, `build_frontend.py` membuat keduanya untuk CDN Vercel. Daftar pilihan dibuat dari data latih aplikasi.
 2. Saat pengguna menekan tombol hitung, `POST /api/predict` mengirim isian ke Flask. Backend memilih salah satu dari 4 versi model CatBoost, mengubah isian ke format yang dikenali model, lalu menghitung perkiraan dan rentangnya.
 3. `POST /api/context` mengambil laporan pembanding dan acuan SK Sekda. Pada halaman analisis, permintaan ini juga mengambil estimasi 3 model dan data grafik. Pemilih sumber latih atau uji memakai `POST /api/analysis`.
 
@@ -85,6 +87,8 @@ python -m venv .venv
 ```
 
 Buka [localhost:8765](http://127.0.0.1:8765/). Model sudah disertakan di repositori dan dimuat saat server mulai berjalan.
+
+Pada Vercel, `python build_frontend.py` berjalan otomatis saat build. Script ini menyiapkan HTML, `options.json`, dan aset di `public/`. Hasil build disajikan lewat CDN. Saat dijalankan dengan Waitress, Flask melayani page dan address `/options.json` yang sama.
 
 ### Menjalankan tes
 

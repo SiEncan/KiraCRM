@@ -836,13 +836,10 @@ setupSearchSelect(
   markResultsOutdated,
 );
 
-// Muat pilihan dari Flask ketika halaman pertama kali dibuka.
+// Baca daftar pilihan dari paket model ketika halaman dibuka.
 async function initializePage() {
   try {
-    // 1. Ambil semua pilihan formulir sekali saat halaman pertama dibuka.
-    // Ambil pilihan dari backend supaya cocok dengan data latihan model. Daftar kategori dan
-    // kelurahan tidak ditulis ulang di JavaScript.
-    const response = await fetch("/api/options");
+    const response = await fetch("/options.json");
 
     if (!response.ok) {
       throw new Error("Halaman belum berhasil dimuat. Silakan muat ulang.");

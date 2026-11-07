@@ -13,6 +13,27 @@ const plot = {
   renderer: null,
 };
 
+let plotlyReady;
+
+// Halaman warga tidak membutuhkan Plotly. Ambil pustakanya saat grafik pertama dibuat.
+function loadPlotly() {
+  if (!plotlyReady) {
+    plotlyReady = new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = "/static/vendor/plotly-strict.min.js";
+      script.onload = resolve;
+      script.onerror = () => {
+        script.remove();
+        plotlyReady = null;
+        reject(new Error("Pustaka grafik belum berhasil dimuat."));
+      };
+      document.head.append(script);
+    });
+  }
+
+  return plotlyReady;
+}
+
 // Pakai scattergl kalau browser mendukung WebGL agar banyak titik tetap ringan. Kalau tidak
 // ada, pakai scatter biasa.
 function rendererType() {
@@ -171,6 +192,8 @@ function renderScatterplot(evaluation) {
 
   // Antrekan hasil baru agar proses menggambar yang bersamaan tidak bertabrakan.
   plot.queue = plot.queue.then(async () => {
+    await loadPlotly();
+
     if (plot.evaluation !== evaluation) {
       return;
     }

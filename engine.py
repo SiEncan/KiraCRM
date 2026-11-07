@@ -46,6 +46,36 @@ def format_count(value):
     return format(int(value), ",d").replace(",", ".")
 
 
+def build_form_options(data_latih, data_latih_iqr):
+    """Susun daftar pilihan dari paket data latih aplikasi."""
+
+    kelompok_kategori = data_latih.groupby("Kategori Laporan")
+    kelompok_kecamatan = data_latih.groupby("Kecamatan")
+
+    return dict(
+        kategori_laporan=sorted(data_latih["Kategori Laporan"].unique().tolist()),
+        rincian_per_kategori={
+            kategori: sorted(group.rincian_asli.unique().tolist())
+            for kategori, group in kelompok_kategori
+        },
+        kelurahan_per_kecamatan={
+            kecamatan: sorted(group.Kelurahan.unique().tolist())
+            for kecamatan, group in kelompok_kecamatan
+        },
+        kanal_aduan=sorted(data_latih.Kanal_Aduan.unique().tolist()),
+        unit_penanganan=sorted(data_latih["Unit Penanganan"].unique().tolist()),
+        unit_per_kategori={
+            kategori: sorted(group["Unit Penanganan"].unique().tolist())
+            for kategori, group in kelompok_kategori
+        },
+        source=(
+            f"Pilihan diambil dari {format_count(len(data_latih))} laporan latihan acak 80%. "
+            "Pilihan tidak dipelajari dari 20% uji."
+        ),
+        kategori_dalam_latihan=sorted(data_latih_iqr["Kategori Laporan"].unique().tolist()),
+    )
+
+
 def format_number(value, decimals=2):
     """Format angka untuk kalimat keterangan: 12.50 menjadi 12,50."""
 
@@ -602,19 +632,7 @@ class Engine:
 
         # Dropdown tetap memakai nama rincian asli supaya pengguna cukup melihat Lain-lain.
         # Pilihannya diambil dari data latihan awal.
-        self.options = dict(
-            kategori_laporan=sorted(data_latih["Kategori Laporan"].unique().tolist()),
-            rincian_per_kategori={kategori_laporan: sorted(group.rincian_asli.unique().tolist())
-                     for kategori_laporan, group in data_latih.groupby("Kategori Laporan")},
-            kelurahan_per_kecamatan={kecamatan: sorted(group.Kelurahan.unique().tolist())
-                       for kecamatan, group in data_latih.groupby("Kecamatan")},
-            kanal_aduan=sorted(data_latih.Kanal_Aduan.unique().tolist()),
-            unit_penanganan=sorted(data_latih["Unit Penanganan"].unique().tolist()),
-            unit_per_kategori={kategori_laporan: sorted(group["Unit Penanganan"].unique().tolist())
-                               for kategori_laporan, group in data_latih.groupby("Kategori Laporan")},
-            source=f"Pilihan diambil dari {format_count(len(data_latih))} laporan latihan acak 80%. Pilihan tidak dipelajari dari 20% uji.",
-            kategori_dalam_latihan=sorted(self.data_latih_iqr["Kategori Laporan"].unique().tolist()),
-        )
+        self.options = build_form_options(data_latih, self.data_latih_iqr)
 
     def load_catboost_bundle(self, kunci_model):
         """Muat CatBoost dan encoding yang tersimpan saat latihan."""
