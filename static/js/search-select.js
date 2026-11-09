@@ -5,7 +5,7 @@ function setupSearchSelect(
   id,
   placeholder,
   searchControls,
-  perbaruiKeteranganRincian,
+  perbaruiKolomTerkait,
   markResultsOutdated,
 ) {
   // Buat kotak pencarian dan daftar pilihan di atas select HTML yang asli.
@@ -36,6 +36,9 @@ function setupSearchSelect(
 
   input.autocomplete = "off";
   input.placeholder = placeholder;
+  // Pindahkan aturan wajib isi ke kotak yang terlihat agar browser bisa menyorotnya.
+  input.required = select.required;
+  select.required = false;
   input.setAttribute("role", "combobox");
   input.setAttribute("aria-autocomplete", "list");
 
@@ -49,7 +52,7 @@ function setupSearchSelect(
   toggle.tabIndex = -1;
   toggle.setAttribute(
     "aria-label",
-    "Buka pilihan " + (id === "rincian_masalah" ? "rincian masalah" : "unit penanganan"),
+    "Buka pilihan " + placeholder.replace("Pilih atau cari ", ""),
   );
 
   wrapper.append(input, toggle, list);
@@ -78,7 +81,7 @@ function setupSearchSelect(
     closeOptions();
 
     if (id === "rincian_masalah") {
-      perbaruiKeteranganRincian();
+      perbaruiKolomTerkait();
     }
   }
 
@@ -119,7 +122,7 @@ function setupSearchSelect(
 
   // Pencarian hanya menyaring daftar dalam browser; tidak meminta prediksi server.
   function showOptions(query = "") {
-    // Tutup dropdown satunya saat daftar ini dibuka. Pencarian berlangsung di browser saja,
+    // Tutup dropdown lain saat daftar ini dibuka. Pencarian berlangsung di browser saja,
     // belum meminta prediksi ke server.
     for (const [other, control] of searchControls) {
       if (other !== id) {
@@ -181,9 +184,11 @@ function setupSearchSelect(
     );
     select.value = match ? match.value : "";
     input.setCustomValidity(
-      match ? "" : "Pilih hasil pencarian, atau kosongkan kolom.",
+      match ? "" : input.required
+        ? "Pilih kategori laporan dari hasil pencarian."
+        : "Pilih hasil pencarian, atau kosongkan kolom.",
     );
-    perbaruiKeteranganRincian();
+    perbaruiKolomTerkait();
 
     markResultsOutdated();
 

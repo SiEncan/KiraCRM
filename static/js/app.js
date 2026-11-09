@@ -32,8 +32,8 @@ const appState = {
   analysisRequest: 0,
 };
 
-// Simpan fungsi dropdown rincian dan unit agar dapat disinkronkan/reset.
-// Map ini menyimpan fungsi sync/close milik dropdown rincian dan unit. Saat Reset atau
+// Simpan fungsi dropdown kategori, rincian, dan unit agar dapat disinkronkan/reset.
+// Map ini menyimpan fungsi sync/close milik dropdown pencarian. Saat Reset atau
 // pilihan berubah, kotak pencariannya bisa disamakan dengan select asli.
 const searchControls = new Map();
 
@@ -818,8 +818,16 @@ for (const link of document.querySelectorAll(
 
 setupScatterZoom();
 
-// Pasang dropdown pencarian untuk rincian dan unit saat halaman dibuka. Ini hanya menambah
+// Pasang dropdown pencarian untuk kategori, rincian, dan unit saat halaman dibuka. Ini hanya menambah
 // cara mencari pilihan, belum menjalankan prediksi.
+setupSearchSelect(
+  "kategori_laporan",
+  "Pilih atau cari kategori laporan",
+  searchControls,
+  perbaruiPilihanRincian,
+  markResultsOutdated,
+);
+
 setupSearchSelect(
   "rincian_masalah",
   "Pilih atau cari rincian masalah",
