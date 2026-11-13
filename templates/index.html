@@ -320,7 +320,7 @@
               <section
                 id="resultPanel"
                 class="
-                  panel result-panel rounded-2xl border border-line bg-white p-7 shadow-sm max-sm:px-4
+                  panel result-panel min-w-0 rounded-2xl border border-line bg-white p-7 shadow-sm max-sm:px-4
                   max-sm:py-6 print:my-3 print:break-inside-avoid print:shadow-none print:block
                 "
                 aria-live="polite"
@@ -692,13 +692,14 @@
                 </div>
               </fieldset>
             </div>
-            <p id="analysisSourceNote" class="mt-4 mb-0 text-xs leading-6 text-muted">30 laporan uji dipilih berdasarkan kemiripan daun CatBoost.</p>
+            <p class="mt-4 mb-0 text-xs leading-6 text-muted">Laporan dipilih berdasarkan banyaknya pohon CatBoost yang menempatkannya pada daun yang sama dengan isian Anda. Kategori dan rincian masalahnya bisa berbeda.</p>
+            <p id="analysisSourceNote" class="mt-1 mb-0 text-xs leading-6 text-muted">Menampilkan 30 laporan uji.</p>
             <p id="analysisLoadStatus" class="mt-1 mb-0 text-xs leading-6 text-teal" role="status" aria-live="polite"></p>
           </section>
 
           <!-- Histogram dan median-kuartil memakai 30 anggota terdekat dari sumber yang dipilih. -->
           <section class="rounded-2xl border border-line bg-white p-6 shadow-sm max-sm:p-4" aria-labelledby="distributionHeading">
-            <h2 id="distributionHeading" class="text-lg">Sebaran durasi laporan paling mirip</h2>
+            <h2 id="distributionHeading" class="text-lg">Sebaran durasi laporan pembanding</h2>
             <p id="histogramScope" class="mt-2 mb-0 text-xs leading-6 text-muted"></p>
             <div id="distributionPanels" class="mt-5 grid gap-6">
               <div id="distributionTestPanel" class="min-w-0">

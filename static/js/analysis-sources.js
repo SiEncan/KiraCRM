@@ -105,10 +105,10 @@ function renderAnalysisPanels(analysis, overall) {
   const both = groups.length === 2;
   const dariDataLatih = groups.some((group) => group.source === "train");
   getElement("analysisSourceNote").textContent = both
-    ? "30 laporan uji dan 30 laporan latihan dipilih terpisah. Histogram, median, kuartil, MAE, serta penanda grafik tetap mengikuti kelompok masing-masing."
+    ? "Menampilkan 30 laporan uji dan 30 laporan latihan, dipilih terpisah."
     : dariDataLatih
-      ? "30 laporan latihan terdekat."
-      : "30 laporan uji terdekat yang tidak dipakai melatih model.";
+      ? "Menampilkan 30 laporan latihan."
+      : "Menampilkan 30 laporan uji.";
   renderDistributions(groups);
   renderPerformance(groups, overall);
 
